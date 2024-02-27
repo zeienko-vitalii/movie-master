@@ -6,7 +6,6 @@ import SearchIcon from "./search.svg";
 import MovieCard from "./components/MovieCard";
 import Spinner from "./components/spinner/Spinner";
 
-// c032e2d7
 //c032e2d7-1e3e-4e3a-8f9e-3f3b7d3e3e3e
 
 const App = () => {
@@ -15,16 +14,23 @@ const App = () => {
 	const [search, setSearch] = useState("");
 
 	const searchMovies = async (title) => {
-		setIsLoading(true);
-		if (!title.length) {
-			setIsLoading(false);
-			return;
-		}
+		try {
+			setIsLoading(true);
+			if (!title.length) {
+				setIsLoading(false);
+				return;
+			}
 
-		const response = await fetch(`${process.env.OMDB_API_URL}&s=${title}`);
-		const data = await response.json();
-		setMovies(data.Search);
-		setIsLoading(false);
+			const url = `${process.env.REACT_APP_OMDB_API_URL}&s=${title}`;
+
+			const response = await fetch(url);
+			const data = await response.json();
+			setMovies(data.Search);
+			setIsLoading(false);
+		} catch (error) {
+			console.error(error);
+			setIsLoading(false);
+		}
 	};
 
 	const onSearchChange = (e) => {
@@ -35,7 +41,7 @@ const App = () => {
 	return (
 		<div className="app">
 			<h1>MovieMaster</h1>
-
+			
 			<div className="search">
 				<input
 					placeholder="Search for movies"
@@ -57,7 +63,7 @@ const App = () => {
 			) : movies?.length > 0 ? (
 				<div className="container">
 					{movies.map((el) => (
-						<MovieCard movie={el} />
+						<MovieCard key={el.Title || "movie"} movie={el} />
 					))}
 				</div>
 			) : (
